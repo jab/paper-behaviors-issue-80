@@ -1,0 +1,126 @@
+<!-- base tag not working in iOS? -->
+<!--base href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/"-->
+
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/app-route/app-location.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/app-route/app-route.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/app-layout/app-header/app-header.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/app-layout/app-scrollpos-control/app-scrollpos-control.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/iron-icons/iron-icons.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/iron-pages/iron-pages.html">
+<link rel="import" href="https://cdn.rawgit.com/StartPolymer/cdn/1.8.1/components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="app-root">
+  <template>
+    <style>
+      app-toolbar {
+        background-color: #ccf;
+      }
+      iron-pages div {
+        padding: 30px;
+      }
+      a {
+        cursor: pointer;
+        color: blue;
+      }
+    </style>
+    <app-location route="{{route}}" use-hash-as-path></app-location>
+    <app-route route="{{route}}" pattern="/:page" data="{{pageData}}"></app-route>
+
+    <app-scrollpos-control selected="[[page]]"></app-scrollpos-control>
+
+    <app-header-layout>
+      <app-header fixed>
+        <app-toolbar>
+          <paper-icon-button hidden$="{{shouldShowBackButton}}" icon="menu" on-tap="_toggleDrawer"></paper-icon-button>
+          <paper-icon-button hidden$="{{!shouldShowBackButton}}" icon="arrow-back" on-tap="_changeToPage3"></paper-icon-button>
+          <div main-title>{{pageTitle}}</div>
+        </app-toolbar>
+      </app-header>
+
+      <iron-pages id="pages" selected="[[page]]" attr-for-selected="name">
+        <div name="page1">
+          <a on-tap="_changeToPage2">Click to go to page 2</a>
+        </div>
+        <div name="page2">Now click the back button above</div>
+        <div name="page3">On iOS and Android Chrome, the menu button above is now incorrectly focused</div>
+      </iron-pages>
+    </app-header-layout>
+    
+    <app-drawer id="drawer" swipe-open>
+      Hi I'm a drawer
+    </app-drawer>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'app-root',
+      titleByPage: {
+        'page1': 'Page One Title',
+        'page2': 'Page Two Title',
+        'page3': 'Page Three Title'
+      },
+      properties: {
+        defaultPage: {
+          type: String,
+          readOnly: true,
+          value: 'page1'
+        },
+        page: {
+          type: String,
+          readonly: true,
+          computed: '_computePage(pageData)',
+          notify: true  // Polymer will fire 'page-changed' events for us
+        },
+        pageData: {
+          // Bound to our app-route's data attribute:
+          // https://www.webcomponents.org/element/PolymerElements/app-route/app-route#property-data
+          // To change to another page, just set pageData.page
+          // (as done by our changePage() helper below).
+          type: Object
+        },
+        pageTitle: {
+          type: String,
+          computed: '_computePageTitle(page)'
+        },
+        route: Object,
+        shouldShowBackButton: {
+          type: Boolean,
+          computed: '_computeShouldShowBackButton(page)'
+        }
+      },
+      attached: function () {
+        this.async(function () {
+          if (!this.route.path) {
+            this.set('route.path', '/' + this.defaultPage);
+          }
+        });
+      },
+      changePage: function (page) {
+        this.async(function () {
+          this.set('pageData.page', page);
+        });
+      },
+      _computePage: function (pageData) {
+        return pageData.page;
+      },
+      _computePageTitle: function (page) {
+        return this.titleByPage[page];
+      },
+      _computeShouldShowBackButton: function (page) {
+        return page === 'page2';
+      },
+      _changeToPage2: function () {
+        this.changePage('page2');
+      },
+      _changeToPage3: function () {
+        this.changePage('page3');
+      },
+      _toggleDrawer: function () {
+        this.$.drawer.toggle();
+      }
+    });
+  </script>
+</dom-module>
