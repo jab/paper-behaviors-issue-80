@@ -101,7 +101,7 @@
       changePage: function (page) {
         this.async(function () {
           this.set('pageData.page', page);
-        });
+        }, 250);
       },
       _computePage: function (pageData) {
         return pageData.page;

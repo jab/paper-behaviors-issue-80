@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="bower_components/polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+  </head>
+  <body>
+    <dom-bind>
+      <template>
+        Click this button first:
+        <paper-icon-button src="https://image.freepik.com/free-icon/bug_318-32010.jpg" raised on-tap="expected"></paper-icon-button>
+        <div id="results" style="margin-bottom:20px"></div>
+
+        <div id="test2" hidden>
+          Now click this button:
+          <paper-icon-button src="https://image.freepik.com/free-icon/bug_318-32010.jpg" raised on-tap="buggy"></paper-icon-button>
+          <div id="results2"></div>
+        </div>
+      </template>
+    </dom-bind>
+    <script>
+      var autobind = document.querySelector('dom-bind');
+      autobind.expected = function () {
+        results.textContent = 'You clicked the first button! Notice that it has not been given keyboard focus.';
+        test2.removeAttribute('hidden');
+      };
+      autobind.buggy = function () {
+        alert('Now hit OK...');
+        results2.textContent = 'The second button has been given keyboard focus, even though the keyboard wasn’t used to click it.'
+      };
+    </script>
+  </body>
+</html>
